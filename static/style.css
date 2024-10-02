@@ -891,8 +891,10 @@ input[type="radio"].theme-radio:checked::before {
     flex-direction: column;
 }
 #publisher-suggestions{
-    width: 200px;
-    height: 200px;
+    width: 206px;
+    height: auto;
+    min-height: 30px;
+    max-height: 200px;
     background-color: var(--main-color-4);
     position: absolute; 
     top: 100%; 
@@ -902,9 +904,25 @@ input[type="radio"].theme-radio:checked::before {
    border-radius: 0.5rem;
    background-color: var(--main-color-4);
    border: 2px solid var(--main-color-3);
+   overflow-y: scroll;
+   display: none;
+   flex-direction: column;
+border-top: 0px;
 }
 #publisher-frame{
     position: relative;
     display: flex;
     flex-direction: column;
+}
+.publisher-suggestion{
+    cursor: pointer;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 0.25rem;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+:hover.publisher-suggestion{
+    background-color: var(--hover-color-1);
 }

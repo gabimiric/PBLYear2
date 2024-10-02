@@ -357,6 +357,7 @@ async function fetchBookSuggestions() {
           document.getElementById('title-input').value = title;
           document.getElementById('author-input').value = authors.join(', ');
           document.getElementById('year-input').value = year;
+          manualSearch();
         };
 
         bookDisplay.appendChild(bookContent);
@@ -494,88 +495,113 @@ function clear_output() {
 
 //------------------------ PUBLISHER SUGGESTIONS ------------------------
 
-let publisherTimeout;
-let publisherFetchController;
+let allPublishers = [];
+let timeoutId;
+let currentFetch;
 
-// Function to handle the focus event for the publisher input
-function focusOnPublisher() {
-  const titleInput = document.getElementById('title-input').value.trim();
-  const authorInput = document.getElementById('author-input').value.trim();
-  const yearInput = document.getElementById('year-input').value.trim();
-  
-  if (titleInput.length < 2 || authorInput.length < 2 || yearInput.length < 2) {
-    return; // Ensure that all inputs have at least 2 characters
-  }
-
-  // Abort any previous publisher fetching if another request is triggered
-  if (publisherFetchController) {
-    publisherFetchController.abort();
-  }
-
-  // Start searching for publishers
-  fetchPublisherSuggestions(titleInput, authorInput, yearInput);
-}
-
-// Function to fetch publisher suggestions
-async function fetchPublisherSuggestions(title, author, year) {
-  const publisherSuggestions = document.getElementById('publisher-suggestions');
-  publisherSuggestions.innerHTML = 'Searching for publishers...';
-
-  // Abort controller to handle multiple requests
-  publisherFetchController = new AbortController();
-  const { signal } = publisherFetchController;
-
-  try {
-    // Split authors by commas to handle multiple authors
-    const authors = author.split(',').map(a => a.trim());
+async function fetchPublisherSuggestions() {
+    const titleInput = document.getElementById('title-input').value.trim();
+    const authorInput = document.getElementById('author-input').value.trim();
+    const yearInput = document.getElementById('year-input').value.trim();
+    const publisherSuggestions = document.getElementById('publisher-suggestions');
     
-    // Build a query that includes the title and all authors
-    const searchQuery = encodeURIComponent(`${title} ${authors.join(' ')} ${year}`);
-    const response = await fetch(`https://openlibrary.org/search.json?q=${searchQuery}`, { signal });
-    const data = await response.json();
+    publisherSuggestions.innerHTML = '';
 
-    const publishers = new Set(); // Use a Set to store unique publishers
-    data.docs.forEach(book => {
-      if (book.publisher) {
-        book.publisher.forEach(pub => publishers.add(pub));
-      }
-    });
-
-    // Clear previous suggestions
-    publisherSuggestions.innerHTML = ''; 
-
-    if (publishers.size === 0) {
-      publisherSuggestions.innerHTML = '<div>No publishers found</div>';
-      return;
+    if (titleInput.length < 2 && authorInput.length < 2 && yearInput.length < 2) {
+        publisherSuggestions.style.display = 'none';
+        return;
     }
 
-    // Populate the suggestions list with unique publishers
-    publishers.forEach(publisher => {
-      const suggestion = document.createElement('div');
-      suggestion.classList.add('publisher-suggestion');
-      suggestion.textContent = publisher;
-      
-      // Add click event to autofill the publisher input
-      suggestion.onclick = () => {
-        document.getElementById('publisher-input').value = publisher;
-        publisherSuggestions.innerHTML = ''; // Hide suggestions after selection
-      };
-      
-      publisherSuggestions.appendChild(suggestion);
+    if (currentFetch) {
+        currentFetch.abort();
+    }
+    
+    currentFetch = new AbortController();
+    const { signal } = currentFetch;
+
+    try {
+        const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(titleInput || authorInput || yearInput)}`, { signal });
+        const data = await response.json();
+        const books = data.docs;
+
+        const publishers = new Set();
+        books.forEach(book => {
+            if (book.publisher) {
+                book.publisher.forEach(pub => publishers.add(pub));
+            }
+        });
+
+        allPublishers = Array.from(publishers);
+
+        allPublishers.forEach(publisher => {
+            const publisherDiv = document.createElement('div');
+            publisherDiv.classList.add('publisher-suggestion');
+            publisherDiv.classList.add('text');
+            publisherDiv.textContent = publisher;
+
+            publisherDiv.onclick = () => {
+                document.getElementById('publisher-input').value = publisher;
+                hideSuggestions();
+            };
+            publisherSuggestions.appendChild(publisherDiv);
+        });
+
+        publisherSuggestions.style.display = 'block';
+
+        if (publishers.size === 0) {
+            publisherSuggestions.innerHTML = '';
+        }
+
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            console.error('Error fetching publisher suggestions:', error);
+            publisherSuggestions.innerHTML = '';
+        }
+    }
+}
+
+function filterPublishers() {
+    const input = document.getElementById('publisher-input').value.toLowerCase();
+    const publisherSuggestions = document.getElementById('publisher-suggestions');
+    publisherSuggestions.innerHTML = '';
+
+    const filteredPublishers = allPublishers.filter(publisher => 
+        publisher.toLowerCase().includes(input)
+    );
+
+    filteredPublishers.forEach(publisher => {
+        const publisherDiv = document.createElement('div');
+        publisherDiv.classList.add('publisher-suggestion');
+        publisherDiv.textContent = publisher;
+
+        publisherDiv.onclick = () => {
+            document.getElementById('publisher-input').value = publisher;
+            hideSuggestions();
+        };
+        publisherSuggestions.appendChild(publisherDiv);
     });
 
-  } catch (error) {
-    // Stop the animation and handle any errors
-    if (error.name === 'AbortError') {
-      console.log('Previous request aborted due to new request.');
+    if (filteredPublishers.length > 0) {
+        publisherSuggestions.style.display = 'block';
     } else {
-      console.error('Error fetching publisher data:', error);
-      publisherSuggestions.innerHTML = '<div>Error fetching publishers</div>';
+        publisherSuggestions.style.display = 'none';
     }
-  }
 }
 
-// Clear the publisher suggestions when necessary
-function clearPublisherSuggestions() {
-  document.getElementById('publisher-suggestions').innerHTML = ''; 
+function hideSuggestions() {
+    timeoutId = setTimeout(() => {
+        if (currentFetch) {
+            currentFetch.abort();
+        }
+
+        const publisherSuggestions = document.getElementById('publisher-suggestions');
+        publisherSuggestions.innerHTML = '';
+        publisherSuggestions.style.display = 'none';
+    }, 100);
 }
+
+function clearHideTimeout() {
+    clearTimeout(timeoutId);
+}
+
+
