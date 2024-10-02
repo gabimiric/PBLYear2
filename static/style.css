@@ -886,10 +886,25 @@ input[type="radio"].theme-radio:checked::before {
     align-items: center;
     justify-content: center;
 }
-.no-results-message{
-    height: 100%;
-    width: 100%;
+#book-input-frame{
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+}
+#publisher-suggestions{
+    width: 200px;
+    height: 200px;
+    background-color: var(--main-color-4);
+    position: absolute; 
+    top: 100%; 
+    left: 0; 
+    background-color: white; 
+    z-index: 100;
+   border-radius: 0.5rem;
+   background-color: var(--main-color-4);
+   border: 2px solid var(--main-color-3);
+}
+#publisher-frame{
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }

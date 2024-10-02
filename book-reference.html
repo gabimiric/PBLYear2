@@ -176,8 +176,9 @@
                     </div>
                     <div class="form-input-box">
                         <div class="form-text text">Publisher</div>
+                        <div id="publisher-frame">
                         <div class="book-input-frame">
-                            <input type="text" class="input-email" id="publisher-input" maxlength="100">
+                            <input type="text" class="input-email" id="publisher-input" maxlength="100" onfocus="focusOnPublisher()">
 
                             <svg class="input-clear svg-style" onclick="clear_input('publisher-input')"
                                 viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
@@ -186,6 +187,8 @@
                             </svg>
 
                         </div>
+                        <div id="publisher-suggestions"></div>
+                    </div>
                     </div>
                 </div>
                 <div id="book-display">

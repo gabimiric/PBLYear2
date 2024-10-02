@@ -249,10 +249,8 @@ function startSearchingAnimation() {
   const bookDisplay = document.getElementById('book-display');
   let dotCount = 0;
 
-
   bookDisplay.innerHTML = '<div class="searching-message text">Searching</div>';
   const searchingMessage = document.querySelector('.searching-message');
-
 
   setTimeout(() => {
     searchInterval = setInterval(() => {
@@ -289,6 +287,7 @@ async function fetchBookSuggestions() {
   const { signal } = currentFetchController;
 
   try {
+
     const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(titleInput || authorInput || yearInput)}`, { signal });
     const data = await response.json();
     const books = data.docs.slice(0, 100); 
@@ -303,6 +302,8 @@ async function fetchBookSuggestions() {
 
     bookDisplay.innerHTML = '';
 
+    const authorSearchList = authorInput.split(',').map(author => author.trim().toLowerCase());
+
     sortedBooks.forEach(book => {
       const title = book.title || 'Unknown title';
       const authors = book.author_name || ['Unknown author'];
@@ -310,7 +311,11 @@ async function fetchBookSuggestions() {
       const coverId = book.cover_i || '';
 
       const titleMatch = titleInput.length < 2 || title.toLowerCase().includes(titleInput.toLowerCase());
-      const authorMatch = authorInput.length < 2 || authors.some(author => author.toLowerCase().includes(authorInput.toLowerCase()));
+
+      const authorMatch = authorInput.length < 2 || authors.some(bookAuthor =>
+        authorSearchList.some(inputAuthor => bookAuthor.toLowerCase().includes(inputAuthor))
+      );
+
       const yearMatch = yearInput === '' || year.toString() === yearInput;
 
       if (titleMatch && authorMatch && yearMatch) {
@@ -359,7 +364,7 @@ async function fetchBookSuggestions() {
     });
 
     if (bookDisplay.innerHTML === '') {
-      bookDisplay.innerHTML = '<div class="no-results-message text">No results found</div>';
+      bookDisplay.innerHTML = '<div class="searching-message text">No results found</div>';
     }
 
   } catch (error) {
@@ -369,7 +374,7 @@ async function fetchBookSuggestions() {
       console.log('Previous request aborted due to new request.');
     } else {
       console.error('Error fetching book data:', error);
-      bookDisplay.innerHTML = '<div class="error-message">Error fetching book data</div>';
+      bookDisplay.innerHTML = '<div class="searching-message text">Error fetching book data</div>';
     }
   }
 }
@@ -382,6 +387,7 @@ function debounceSearch(func, delay) {
 }
 
 const manualSearch = debounceSearch(fetchBookSuggestions, 300);
+
 
 
 
@@ -484,4 +490,92 @@ function close_output() {
 function clear_output() {
   document.getElementById('output-box').innerHTML = '';
   ieeeCounter = 1;
+}
+
+//------------------------ PUBLISHER SUGGESTIONS ------------------------
+
+let publisherTimeout;
+let publisherFetchController;
+
+// Function to handle the focus event for the publisher input
+function focusOnPublisher() {
+  const titleInput = document.getElementById('title-input').value.trim();
+  const authorInput = document.getElementById('author-input').value.trim();
+  const yearInput = document.getElementById('year-input').value.trim();
+  
+  if (titleInput.length < 2 || authorInput.length < 2 || yearInput.length < 2) {
+    return; // Ensure that all inputs have at least 2 characters
+  }
+
+  // Abort any previous publisher fetching if another request is triggered
+  if (publisherFetchController) {
+    publisherFetchController.abort();
+  }
+
+  // Start searching for publishers
+  fetchPublisherSuggestions(titleInput, authorInput, yearInput);
+}
+
+// Function to fetch publisher suggestions
+async function fetchPublisherSuggestions(title, author, year) {
+  const publisherSuggestions = document.getElementById('publisher-suggestions');
+  publisherSuggestions.innerHTML = 'Searching for publishers...';
+
+  // Abort controller to handle multiple requests
+  publisherFetchController = new AbortController();
+  const { signal } = publisherFetchController;
+
+  try {
+    // Split authors by commas to handle multiple authors
+    const authors = author.split(',').map(a => a.trim());
+    
+    // Build a query that includes the title and all authors
+    const searchQuery = encodeURIComponent(`${title} ${authors.join(' ')} ${year}`);
+    const response = await fetch(`https://openlibrary.org/search.json?q=${searchQuery}`, { signal });
+    const data = await response.json();
+
+    const publishers = new Set(); // Use a Set to store unique publishers
+    data.docs.forEach(book => {
+      if (book.publisher) {
+        book.publisher.forEach(pub => publishers.add(pub));
+      }
+    });
+
+    // Clear previous suggestions
+    publisherSuggestions.innerHTML = ''; 
+
+    if (publishers.size === 0) {
+      publisherSuggestions.innerHTML = '<div>No publishers found</div>';
+      return;
+    }
+
+    // Populate the suggestions list with unique publishers
+    publishers.forEach(publisher => {
+      const suggestion = document.createElement('div');
+      suggestion.classList.add('publisher-suggestion');
+      suggestion.textContent = publisher;
+      
+      // Add click event to autofill the publisher input
+      suggestion.onclick = () => {
+        document.getElementById('publisher-input').value = publisher;
+        publisherSuggestions.innerHTML = ''; // Hide suggestions after selection
+      };
+      
+      publisherSuggestions.appendChild(suggestion);
+    });
+
+  } catch (error) {
+    // Stop the animation and handle any errors
+    if (error.name === 'AbortError') {
+      console.log('Previous request aborted due to new request.');
+    } else {
+      console.error('Error fetching publisher data:', error);
+      publisherSuggestions.innerHTML = '<div>Error fetching publishers</div>';
+    }
+  }
+}
+
+// Clear the publisher suggestions when necessary
+function clearPublisherSuggestions() {
+  document.getElementById('publisher-suggestions').innerHTML = ''; 
 }
