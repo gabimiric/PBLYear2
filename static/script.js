@@ -622,6 +622,7 @@ function filterPublishers() {
     filteredPublishers.forEach(publisher => {
         const publisherDiv = document.createElement('div');
         publisherDiv.classList.add('publisher-suggestion');
+        publisherDiv.classList.add('text');
         publisherDiv.textContent = publisher;
 
         publisherDiv.onclick = () => {
