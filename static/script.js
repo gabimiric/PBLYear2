@@ -267,7 +267,6 @@ function stopSearchingAnimation() {
 
 function parseYearFilter(yearInput) {
   yearInput = yearInput.trim();
-  let yearFilter = {};
 
   // Match patterns like ">year", "<year", or "year1-year2"
   const greaterThanMatch = yearInput.match(/^>(\d{4})$/);
@@ -275,23 +274,16 @@ function parseYearFilter(yearInput) {
   const rangeMatch = yearInput.match(/^(\d{4})-(\d{4})$/);
 
   if (greaterThanMatch) {
-    yearFilter.type = 'greater';
-    yearFilter.year = parseInt(greaterThanMatch[1]);
+    return { type: 'greater', year: parseInt(greaterThanMatch[1]) };
   } else if (lessThanMatch) {
-    yearFilter.type = 'less';
-    yearFilter.year = parseInt(lessThanMatch[1]);
+    return { type: 'less', year: parseInt(lessThanMatch[1]) };
   } else if (rangeMatch) {
-    yearFilter.type = 'range';
-    yearFilter.yearStart = parseInt(rangeMatch[1]);
-    yearFilter.yearEnd = parseInt(rangeMatch[2]);
-  } else if (!isNaN(yearInput)) {
-    yearFilter.type = 'exact';
-    yearFilter.year = parseInt(yearInput);
+    return { type: 'range', yearStart: parseInt(rangeMatch[1]), yearEnd: parseInt(rangeMatch[2]) };
+  } else if (!isNaN(yearInput) && yearInput !== "") {
+    return { type: 'exact', year: parseInt(yearInput) };
   } else {
-    yearFilter.type = 'invalid'; // Invalid year format
+    return false; // Invalid year format
   }
-
-  return yearFilter;
 }
 
 async function fetchBookSuggestions() {
@@ -301,6 +293,13 @@ async function fetchBookSuggestions() {
 
   const bookDisplay = document.getElementById('book-display');
   bookDisplay.innerHTML = '';
+
+  // Stop the search if the year input is invalid
+  const yearFilter = parseYearFilter(yearInput);
+  if (yearInput && yearFilter === false) {
+    console.log("Invalid year format. No search will be performed.");
+    return;
+  }
 
   if (titleInput.length < 2 && authorInput.length < 2 && yearInput.length < 2) {
     bookDisplay.innerHTML = ''; 
@@ -332,8 +331,6 @@ async function fetchBookSuggestions() {
 
     const authorSearchList = authorInput.split(',').map(author => author.trim().toLowerCase());
 
-    const yearFilter = parseYearFilter(yearInput); // Parse year filter
-
     sortedBooks.forEach(book => {
       const title = book.title || 'Unknown title';
       const authors = book.author_name || ['Unknown author'];
@@ -360,9 +357,6 @@ async function fetchBookSuggestions() {
             break;
           case 'exact':
             yearMatch = year.toString() === yearFilter.year.toString();
-            break;
-          case 'invalid':
-            yearMatch = true; // Ignore invalid year input, search all
             break;
         }
       }
@@ -622,7 +616,6 @@ function filterPublishers() {
     filteredPublishers.forEach(publisher => {
         const publisherDiv = document.createElement('div');
         publisherDiv.classList.add('publisher-suggestion');
-        publisherDiv.classList.add('text');
         publisherDiv.textContent = publisher;
 
         publisherDiv.onclick = () => {
