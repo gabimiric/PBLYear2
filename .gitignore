@@ -135,6 +135,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+myenv
 
 # Spyder project settings
 .spyderproject
@@ -261,5 +262,3 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/flask,python
 
-private.txt
-books.db

@@ -1,2 +1,0 @@
- My fiest work added gitignore to hide our keys,made search engine b
-ut unfortunately ( i missunderstood) (+I thought about adding a feature, but the rest of the team didn't like it.)
