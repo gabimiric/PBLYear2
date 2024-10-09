@@ -562,7 +562,7 @@ async function fetchPublisherSuggestions() {
     
     currentFetch = new AbortController();
     const { signal } = currentFetch;
-
+    stopPublisherSearchAnimation(publisherInput);
     startPublisherSearchAnimation(publisherInput);
 
     try {
