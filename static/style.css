@@ -927,3 +927,6 @@ overflow-x: hidden;
 :hover.publisher-suggestion{
     background-color: var(--hover-color-1);
 }
+#publisher-input::placeholder{
+    font-size: 17px;
+}
