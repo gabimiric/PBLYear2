@@ -538,9 +538,7 @@ function clear_output() {
 }
 
 //------------------------ PUBLISHER SUGGESTIONS ------------------------
-
 let allPublishers = [];
-let timeoutId;
 let currentFetch;
 
 async function fetchPublisherSuggestions() {
@@ -551,13 +549,14 @@ async function fetchPublisherSuggestions() {
     
     publisherSuggestions.innerHTML = '';
 
+    // Check if the title, author, or year inputs are less than 2 characters
     if (titleInput.length < 2 && authorInput.length < 2 && yearInput.length < 2) {
         publisherSuggestions.style.display = 'none';
         return;
     }
 
     if (currentFetch) {
-        currentFetch.abort();
+        currentFetch.abort(); // Abort the previous request if still in progress
     }
     
     currentFetch = new AbortController();
@@ -577,12 +576,13 @@ async function fetchPublisherSuggestions() {
 
         allPublishers = Array.from(publishers);
 
+        // Populate the publisher suggestions
         allPublishers.forEach(publisher => {
             const publisherDiv = document.createElement('div');
-            publisherDiv.classList.add('publisher-suggestion');
-            publisherDiv.classList.add('text');
+            publisherDiv.classList.add('publisher-suggestion', 'text');
             publisherDiv.textContent = publisher;
 
+            // When clicking on a suggestion, fill the input and hide suggestions
             publisherDiv.onclick = () => {
                 document.getElementById('publisher-input').value = publisher;
                 hideSuggestions();
@@ -592,11 +592,13 @@ async function fetchPublisherSuggestions() {
 
         publisherSuggestions.style.display = 'block';
 
+        // If no publishers found, clear suggestions
         if (publishers.size === 0) {
             publisherSuggestions.innerHTML = '';
         }
 
     } catch (error) {
+        // Handle any errors except for abort errors
         if (error.name !== 'AbortError') {
             console.error('Error fetching publisher suggestions:', error);
             publisherSuggestions.innerHTML = '';
@@ -605,6 +607,12 @@ async function fetchPublisherSuggestions() {
 }
 
 function filterPublishers() {
+  const titleInput = document.getElementById('title-input').value.trim();
+    const authorInput = document.getElementById('author-input').value.trim();
+    const yearInput = document.getElementById('year-input').value.trim();
+
+    if (titleInput.length < 2 || authorInput.length < 2 || yearInput.length < 2) {return;}
+
     const input = document.getElementById('publisher-input').value.toLowerCase();
     const publisherSuggestions = document.getElementById('publisher-suggestions');
     publisherSuggestions.innerHTML = '';
@@ -615,7 +623,7 @@ function filterPublishers() {
 
     filteredPublishers.forEach(publisher => {
         const publisherDiv = document.createElement('div');
-        publisherDiv.classList.add('publisher-suggestion');
+        publisherDiv.classList.add('publisher-suggestion', 'text');
         publisherDiv.textContent = publisher;
 
         publisherDiv.onclick = () => {
@@ -633,19 +641,42 @@ function filterPublishers() {
 }
 
 function hideSuggestions() {
-    timeoutId = setTimeout(() => {
-        if (currentFetch) {
-            currentFetch.abort();
-        }
+    if (currentFetch) {
+        currentFetch.abort(); // Abort any pending requests when hiding suggestions
+    }
 
-        const publisherSuggestions = document.getElementById('publisher-suggestions');
-        publisherSuggestions.innerHTML = '';
-        publisherSuggestions.style.display = 'none';
-    }, 100);
+    const publisherSuggestions = document.getElementById('publisher-suggestions');
+    publisherSuggestions.innerHTML = ''; // Clear existing suggestions
+    publisherSuggestions.style.display = 'none'; // Hide the suggestions box
+
+    document.removeEventListener('click', handleOutsideClick); // Remove outside click listener
 }
 
-function clearHideTimeout() {
-    clearTimeout(timeoutId);
+function handlePublisherInputFocus() {
+    const publisherInput = document.getElementById('publisher-input').value.trim();
+
+    if (publisherInput.length > 0) {
+        filterPublishers(); // Filter suggestions if there is already text in the input
+    } else {
+        fetchPublisherSuggestions(); // Fetch suggestions if no text in the input
+    }
+
+    // Add event listener to detect click outside the input or suggestions
+    document.addEventListener('click', handleOutsideClick);
 }
+
+function handleOutsideClick(event) {
+    const publisherInput = document.getElementById('publisher-input');
+    const publisherSuggestions = document.getElementById('publisher-suggestions');
+
+    // Check if the clicked element is outside the input or suggestions box
+    if (!publisherInput.contains(event.target) && !publisherSuggestions.contains(event.target)) {
+      fetchPublisherSuggestions();
+        hideSuggestions(); // Hide suggestions if clicked outside
+        
+    }
+}
+
+
 
 
