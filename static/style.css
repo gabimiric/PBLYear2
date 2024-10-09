@@ -923,6 +923,7 @@ overflow-x: hidden;
     border-radius: 0.25rem;
     padding-left: 5px;
     box-sizing: border-box;
+    font-weight: normal;
 }
 :hover.publisher-suggestion{
     background-color: var(--hover-color-1);
