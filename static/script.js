@@ -464,6 +464,32 @@ function formatAuthors(authors) {
   return authorList.map(formatAuthorName).join(', ');
 }
 
+
+
+function loadReferences() {
+  const savedReferences = localStorage.getItem('references');
+  const savedIeeeCounter = localStorage.getItem('ieeeCounter');
+  
+  if (savedReferences) {
+    const referencesArray = JSON.parse(savedReferences);
+    referencesArray.forEach(reference => {
+      displayReference(reference);
+    });
+  }
+
+  if (savedIeeeCounter) {
+    ieeeCounter = parseInt(savedIeeeCounter, 10);
+  }
+}
+
+function saveReferences(referencesArray) {
+  localStorage.setItem('references', JSON.stringify(referencesArray));
+}
+
+function saveIeeeCounter() {
+  localStorage.setItem('ieeeCounter', ieeeCounter.toString());
+}
+
 function addFormattedReference() {
   const title = document.getElementById('title-input').value.trim();
   const author = document.getElementById('author-input').value.trim();
@@ -477,6 +503,7 @@ function addFormattedReference() {
   }
 
   let outputText = '';
+  const savedReferences = JSON.parse(localStorage.getItem('references')) || [];
 
   switch (referenceFormat.toLowerCase()) {
     case 'apa':
@@ -493,15 +520,15 @@ function addFormattedReference() {
     case 'ieee':
       outputText = `[${ieeeCounter}] ${formatAuthors(author)}, “${title},” ${publisher}, ${year}.\n\n`;
       ieeeCounter++;
+      saveIeeeCounter();
       break;
     default:
       outputText = 'Invalid reference format.\n\n';
   }
 
-  const referenceDiv = document.createElement('div');
-  referenceDiv.classList.add('reference-entry');
-  referenceDiv.textContent = outputText;
-  outputBox.appendChild(referenceDiv);
+  displayReference(outputText);
+  savedReferences.push(outputText);
+  saveReferences(savedReferences);
 
   document.getElementById('title-input').value = '';
   document.getElementById('author-input').value = '';
@@ -509,6 +536,31 @@ function addFormattedReference() {
   document.getElementById('publisher-input').value = '';
   open_ref_output();
 }
+
+function displayReference(outputText) {
+  const outputBox = document.getElementById('output-box');
+  const referenceDiv = document.createElement('div');
+  referenceDiv.classList.add('reference-entry');
+  referenceDiv.textContent = outputText;
+  outputBox.appendChild(referenceDiv);
+}
+
+function formatAuthors(author) {
+  return author;
+}
+
+function shouldLoadReferences() {
+  const currentPage = window.location.pathname;
+  // Load references only on '/book-reference' page
+  return currentPage === '/book-reference';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (shouldLoadReferences()) {
+    loadReferences();
+  }
+}, { once: true });
+
 
 
 
@@ -535,6 +587,8 @@ function close_output() {
 function clear_output() {
   document.getElementById('output-box').innerHTML = '';
   ieeeCounter = 1;
+  localStorage.removeItem('references');
+  localStorage.removeItem('ieeeCounter');
 }
 
 //------------------------ PUBLISHER SUGGESTIONS ------------------------
