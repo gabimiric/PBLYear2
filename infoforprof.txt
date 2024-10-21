@@ -1,0 +1,3 @@
+so basically the docker thing it works its running well evrything going as planed but i need to import redis ,json,pymango to use it and to store the data json there 
+++++
+and i think i will add the authentication for the account ( github, google )
