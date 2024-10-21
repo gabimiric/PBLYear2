@@ -57,7 +57,7 @@ for page in range(start_page, end_page + 1):
         book_page_source = driver.page_source
         book_soup = BeautifulSoup(book_page_source, 'html.parser')
 
-        # Try to find the book title, author name, rating, and publication date
+        # Try to find the book title, author name, rating, publication date, and voters
         try:
             # Book title and author
             title = book_soup.find('h1', class_='titluProdus').text.strip()
@@ -83,17 +83,33 @@ for page in range(start_page, end_page + 1):
             rating = rating_span.text.strip() if rating_span else 'N/A'
             print(f"Rating: {rating}")  # Print for testing
 
+            # Number of voters
+            voters_span = book_soup.find('span', {'data-ng-bind': 'votes'})
+            voters = voters_span.text.strip() if voters_span else 'N/A'
+            print(f"Voters: {voters}")  # Print for testing
+
+            # Calculate rate (voters/rating) if both are available and valid
+            try:
+                rate = round(float(voters) / float(rating), 2) if voters != 'N/A' and rating != 'N/A' else 'N/A'
+            except (ValueError, ZeroDivisionError):
+                rate = 'N/A'
+
+            print(f"Rate: {rate}")  # Print for testing
+
             # Store the book details in a dictionary
             book_data = {
                 'title': title,
                 'author': author,
                 'publication_date': publication_date,
-                'rating': rating
+                'rating': rating,
+                'voters': voters,
+                'rate': rate  # Add the calculated rate
             }
 
             # Add the book data to the list
             all_book_data.append(book_data)
-            print(f'Successfully extracted: {title} by {author}, Date: {publication_date}, Rating: {rating}')
+            print(f'Successfully extracted: {title} by {author}, Date: {publication_date}, Rating: {rating}, Voters: {voters}, Rate: {rate}')
+        
         except AttributeError as e:
             print(f"Error on page {new_link}: {e}")
 
