@@ -441,28 +441,31 @@ const manualSearch = debounceSearch(fetchBookSuggestions, 300);
 
 let ieeeCounter = 1;
 
-function formatAuthorName(name) {
-  const nameParts = name.split(' ');
+function formatAuthorName(name, referenceFormat) {
+  const nameParts = name.trim().split(' ');
   if (nameParts.length === 0) {
     return '';
   }
 
-  if (nameParts.length === 1) {
-    return nameParts[0];
+  const lastName = nameParts.pop(); // Last name
+  const initials = nameParts.map(n => n.charAt(0).toUpperCase() + '.').join(' '); // Initials
+  
+  if (referenceFormat === 'mla') {
+    return `${lastName}, ${nameParts.join(' ')}`; // MLA: Last, First
+  }
+  
+  if (referenceFormat === 'ieee') {
+    return `${initials} ${lastName}`; // IEEE: Initials Last
   }
 
-  const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
-  const lastName = nameParts[nameParts.length - 1];
-
-  return `${initials} ${lastName}`;
+  return `${lastName}, ${initials}`; // Default to APA: Last, Initials
 }
 
-function formatAuthors(authors) {
-
+function formatAuthors(authors, referenceFormat) {
   const authorList = authors.split(',').map(author => author.trim());
-
-  return authorList.map(formatAuthorName).join(', ');
+  return authorList.map(author => formatAuthorName(author, referenceFormat)).join(', ');
 }
+
 
 
 
@@ -496,7 +499,6 @@ function addFormattedReference() {
   const year = document.getElementById('year-input').value.trim();
   const publisher = document.getElementById('publisher-input').value.trim();
   const referenceFormat = document.getElementById('reference-format-options').value;
-  const outputBox = document.getElementById('output-box');
 
   if (!title || !author || !year || !publisher) {
     return;
@@ -507,18 +509,13 @@ function addFormattedReference() {
 
   switch (referenceFormat.toLowerCase()) {
     case 'apa':
-      outputText = `${formatAuthors(author)} (${year}). *${title}*. ${publisher}.\n\n`;
+      outputText = `${formatAuthors(author, referenceFormat)} (${year}). *${title}*. ${publisher}.\n\n`;
       break;
     case 'mla':
-      const authorParts = author.split(',');
-      const formattedAuthors = authorParts.map(part => {
-        const trimmedAuthor = part.trim();
-        return `${trimmedAuthor.split(' ').slice(-1)}, ${trimmedAuthor.split(' ').slice(0, -1).join(' ')}`;
-      }).join(', ');
-      outputText = `${formattedAuthors}. *${title}*. ${publisher}, ${year}.\n\n`;
+      outputText = `${formatAuthors(author, referenceFormat)}. *${title}*. ${publisher}, ${year}.\n\n`;
       break;
     case 'ieee':
-      outputText = `[${ieeeCounter}] ${formatAuthors(author)}, “${title},” ${publisher}, ${year}.\n\n`;
+      outputText = `[${ieeeCounter}] ${formatAuthors(author, referenceFormat)}, “${title},” ${publisher}, ${year}.\n\n`;
       ieeeCounter++;
       saveIeeeCounter();
       break;
@@ -537,13 +534,17 @@ function addFormattedReference() {
   open_ref_output();
 }
 
+
 function displayReference(outputText) {
   const outputBox = document.getElementById('output-box');
   const referenceDiv = document.createElement('div');
   referenceDiv.classList.add('reference-entry');
   referenceDiv.textContent = outputText;
+  const lineBreak = document.createElement('br');
   outputBox.appendChild(referenceDiv);
+  outputBox.appendChild(lineBreak);
 }
+
 
 function formatAuthors(author) {
   return author;
@@ -745,7 +746,225 @@ function handleOutsideClick(event) {
     }
 }
 
+//------------------------ ------------------------ ------------------------
+
+function toggleReferenceMenu(){
+  const toggleSwitch = document.getElementById('toggle-reference');
+  const bookInputContainer = document.getElementById('book-input-container');
+  const articleInputContainer = document.getElementById('article-input__box');
+
+  if (toggleSwitch.checked) {
+    bookInputContainer.style.display = 'none';
+    articleInputContainer.style.display = 'flex';
+  } else {
+    bookInputContainer.style.removeProperty("display");
+    articleInputContainer.style.removeProperty("display");
+    
+  }
+}
+
+//------------------------ EXTRACT ARTICLE INFO ------------------------
+
+async function fetchWebInfo(link) {
+  const response = await fetch(`http://127.0.0.1:5000/extract-web-info`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ link: link })
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    return {
+      title: data.title,
+      author_names: data.author_names,
+      publish_date: data.publish_date,
+      favicon: data.favicon
+    };
+  } else {
+    console.error('Error fetching web info');
+    return null; 
+  }
+}
+
+async function handleURL(url) {
+  const link = url.value.trim();
+  const author_input = document.getElementById('article__author-input');
+  const date_input = document.getElementById('article__date-input');
+  const title_input = document.getElementById('article__title-input'); 
+  const favicon_img = document.getElementById('website-icon');
+
+  const webInfo = await fetchWebInfo(link);
+
+  if (webInfo) {
+    author_input.value = webInfo.author_names.join(', '); 
+    date_input.value = webInfo.publish_date; 
+    title_input.value = webInfo.title; 
+    favicon_img.src = webInfo.favicon;
+  } else {
+    console.error('Failed to fetch web information.');
+  }
+}
 
 
 
+
+function close_suggestions() {
+  const suggestionsBox = document.getElementById('suggestions-box');
+  const suggestions_frame = document.getElementById('suggestions-box-flex');
+  suggestions_frame.style.removeProperty('display');
+  suggestionsBox.innerHTML = ''; 
+}
+
+
+//------------------------ ------------------------ ------------------------
+
+function check_toggle_reference(){
+  const toggleSwitch = document.getElementById('toggle-reference');
+
+  if (toggleSwitch.checked) {
+    addFormattedArticleReference();
+  } else {
+    addFormattedReference();
+  }
+}
+
+//------------------------ ARTICLE REFERENCE ------------------------
+
+
+function formatArticleAuthorName(name, referenceFormat) {
+  const nameParts = name.trim().split(' ');
+
+  if (nameParts.length === 0) {
+    return '';
+  }
+
+  if (referenceFormat === 'apa') {
+    const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
+    const lastName = nameParts[nameParts.length - 1];
+    return `${lastName}, ${initials}`;
+  } else if (referenceFormat === 'mla') {
+    return nameParts.reverse().join(', ');
+  } else if (referenceFormat === 'ieee') {
+    const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
+    const lastName = nameParts[nameParts.length - 1];
+    return `${initials} ${lastName}`;
+  }
+  
+  return name; 
+}
+
+function formatArticleAuthors(authors, referenceFormat) {
+  const authorList = authors.split(',').map(author => author.trim());
+  return authorList.map(author => formatArticleAuthorName(author, referenceFormat)).join(', ');
+}
+
+function formatDate(date, referenceFormat) {
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const monthAbbreviations = [
+    "Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", 
+    "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."
+  ];
+
+  const regex = /(\d{4})[,\s]+([a-zA-Z]+)[\s]*(\d{1,2})?|\b(\d{1,2})[\s\-\/]+([a-zA-Z]+)[\s\-\/]+(\d{4})\b|(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{4})/;
+  const match = date.match(regex);
+
+  let year, month, day;
+
+  if (!match) {
+    return 'Invalid date format';
+  }
+
+  if (match[1]) {
+    year = match[1];
+    month = match[2];
+    day = match[3] ? match[3] : '';
+  } else if (match[4]) {
+    day = match[4];
+    month = match[5];
+    year = match[6];
+  } else if (match[7]) {
+    day = match[7];
+    month = match[8];
+    year = match[9];
+  }
+
+  if (!year) {
+    return 'Invalid date format';
+  }
+
+  if (!isNaN(month)) {
+    month = parseInt(month, 10);
+  } else {
+    month = monthNames.findIndex(m => m.toLowerCase() === month.toLowerCase()) + 1;
+  }
+
+  if (referenceFormat === 'apa') {
+    return day ? `${year}, ${monthNames[month - 1]} ${day}` : `${year}, ${monthNames[month - 1]}`;
+  } else if (referenceFormat === 'mla') {
+    return day ? `${day} ${monthNames[month - 1]} ${year}` : `${monthNames[month - 1]} ${year}`;
+  } else if (referenceFormat === 'ieee') {
+    return day ? `[${year}] ${monthAbbreviations[month - 1]} ${day}` : `[${year}] ${monthAbbreviations[month - 1]}`;
+  }
+  
+  return date;
+}
+
+
+
+function addFormattedArticleReference() {
+  const link = document.getElementById('article__link-input').value.trim();
+  const title = document.getElementById('article__title-input').value.trim();
+  const authors = document.getElementById('article__author-input').value.trim();
+  const date = document.getElementById('article__date-input').value.trim();
+  const referenceFormat = document.getElementById('reference-format-options').value;
+
+  if (!link || !title || !authors || !date) {
+    return;
+  }
+
+  let outputText = '';
+  const savedReferences = JSON.parse(localStorage.getItem('references')) || [];
+
+  const formattedAuthors = formatArticleAuthors(authors, referenceFormat);
+  const formattedDate = formatDate(date, referenceFormat);
+
+  let websiteName;
+  try {
+    const url = new URL(link);
+    websiteName = url.hostname.replace('www.', ''); 
+  } catch (error) {
+    console.error('Invalid URL:', error);
+    return; 
+  }
+
+  switch (referenceFormat.toLowerCase()) {
+    case 'apa':
+      outputText = `${formattedAuthors} (${formattedDate}). *${title}*. Retrieved from ${link}\n\n`;
+      break;
+    case 'mla':
+      outputText = `${formattedAuthors}. “${title}.” *${websiteName}*, ${formattedDate}, ${link}.\n\n`;
+      break;
+    case 'ieee':
+      outputText = `[${ieeeCounter}] ${formattedAuthors}, “${title},” *${websiteName}*, [Online]. Available: ${link}. [Accessed: ${formattedDate}].\n\n`;
+      ieeeCounter++;
+      saveIeeeCounter();
+      break;
+    default:
+      outputText = 'Invalid reference format.\n\n';
+  }
+
+  displayReference(outputText);
+  savedReferences.push(outputText);
+  saveReferences(savedReferences);
+
+  document.getElementById('article__link-input').value = '';
+  document.getElementById('article__title-input').value = '';
+  document.getElementById('article__author-input').value = '';
+  document.getElementById('article__date-input').value = '';
+  open_ref_output();
+}
 

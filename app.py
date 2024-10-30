@@ -4,6 +4,7 @@ import requests
 from groq import Groq
 import webbrowser
 import os
+from web import extract_article_info
 
 app = Flask(__name__, template_folder='.')
 
@@ -54,7 +55,6 @@ def generate_suggestions():
     data = request.get_json()
     subject = data.get('subject')
 
-   
     if not subject or subject.strip() == "":
         return jsonify({'suggestions': ''}) 
 
@@ -65,19 +65,39 @@ def generate_suggestions():
         "Do not include any introductory comments, vague advice, or lists; just provide the suggestions directly."
     )
 
-    chat_completion = client.chat.completions.create(
-        messages=[{"role": "user", "content": prompt_message}],
-        model="llama3-8b-8192",
-    )
+    def get_suggestions():
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt_message}],
+            model="llama3-8b-8192",
+        )
 
+        suggestions_content = chat_completion.choices[0].message.content.splitlines()
+        suggestions = [s.strip() for s in suggestions_content if s.strip() and '[' in s and ']' in s]
+        extracted_suggestions = [s[s.index('[')+1:s.index(']')] for s in suggestions]
+        return extracted_suggestions
 
-    suggestions_content = chat_completion.choices[0].message.content.splitlines()
+    suggestions = get_suggestions()
 
-    suggestions = [s.strip() for s in suggestions_content if s.strip() and '[' in s and ']' in s]
-    extracted_suggestions = [s[s.index('[')+1:s.index(']')] for s in suggestions]
-    formatted_suggestions = "\n".join(extracted_suggestions)
+    if len(suggestions) < 5:
+        suggestions = get_suggestions()
+        
+    formatted_suggestions = "\n".join(suggestions)
 
-    return jsonify({'suggestions': formatted_suggestions})  
+    return jsonify({'suggestions': formatted_suggestions})
+
+@app.route('/extract-web-info', methods=['POST'])
+def extract_web_info():
+    data = request.get_json()
+    link = data.get('link')
+    title, author_names, publish_date, favicon = extract_article_info(link)
+    
+    return jsonify({
+        'title': title,
+        'author_names': author_names,
+        'publish_date': publish_date,
+        'favicon': favicon
+    })
+
 
 
 
