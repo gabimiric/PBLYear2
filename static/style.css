@@ -690,6 +690,7 @@ textarea::-webkit-scrollbar {
     overflow: auto;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
+    box-sizing: border-box;
 }
 
 .book-cover {
@@ -952,9 +953,9 @@ input[type="radio"].theme-radio:checked::before {
     grid-template-columns: repeat(2, 1fr);
     width: 192px;
     height: 34px;
-    border: 2px solid var(--main-color-3);
+    
     border-radius: 1rem;
-    background: var(--main-color-4);
+    
     color: var(--main-color-4);
     cursor: pointer;
     user-select: none;
@@ -1013,10 +1014,10 @@ input[type="radio"].theme-radio:checked::before {
     height: 108px;
 }
 .article__upper-frame{
-    width: 342px;
+    width: 338px;
 }
 #article__link-input{
-    width: 294px;
+    width: 290px;
 }
 #website-icon{
     object-fit: cover;
@@ -1031,12 +1032,13 @@ input[type="radio"].theme-radio:checked::before {
     border-radius: 0.5rem;
     user-select: none;
     margin-left: 24px;
+    box-sizing: border-box;
 }
 #article-input__box--lower{
     display: flex;
 }
 .article-input__box--upper{
-width: 536px;
+width: 532px;
 }
 #article-input__box{
     display: flex;
