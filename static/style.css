@@ -1021,9 +1021,10 @@ input[type="radio"].theme-radio:checked::before {
 }
 #website-icon{
     object-fit: cover;
-    width: 108px;
-    height: 108px;
+    width: 104px;
+    height: 104px;
     border-radius: 0.5rem;
+
 }
 #website-icon__frame{
     width: 108px;
