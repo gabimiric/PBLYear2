@@ -95,54 +95,48 @@ def extract_article_info(url):
 
     authors = set()
 
-    author_meta = soup.find_all(['meta'], {'name': 'author'}) + soup.find_all("meta", property="article:author")
-    for meta in author_meta:
-        if meta.get('content'):
-            authors.add(meta['content'].strip())
-
-    author_tags = soup.find_all("a", class_="person-hover")
-    for tag in author_tags:
-        if tag.text.strip():
-            authors.add(tag.text.strip())
 
     byline_tag = soup.find("div", class_="byline-contributor")
     if byline_tag and byline_tag.text.strip():
         authors.add(byline_tag.text.strip())
-
-    json_ld_scripts = soup.find_all("script", type="application/ld+json")
-    for script in json_ld_scripts:
-        try:
-            json_data = json.loads(script.string)
-            authors.update(extract_authors_from_json(json_data))
-        except json.JSONDecodeError:
-            continue
+    else:
+        json_ld_scripts = soup.find_all("script", type="application/ld+json")
+        for script in json_ld_scripts:
+            try:
+                json_data = json.loads(script.string)
+                authors.update(extract_authors_from_json(json_data))
+                if authors:
+                    break
+            except json.JSONDecodeError:
+                continue
 
     if not authors:
         citation_authors = soup.find_all("meta", {"name": "citation_author"})
         for meta in citation_authors:
             if meta.get('content'):
-                # Remove comma from author names
                 author_name = meta['content'].strip().replace(',', '')
                 authors.add(author_name)
-
+    if not authors:
+        author_tags = soup.find_all("a", class_=lambda x: x and ("author" in x or "creator" in x or "writer" in x or "person-hover" in x))
+        for tag in author_tags:
+            if tag.text.strip():
+                authors.add(tag.text.strip())
+    if not authors:
+        span_authors = soup.find_all("span", itemprop="author")
+        for span in span_authors:
+            name_tag = span.find("span", itemprop="name")
+            if name_tag and name_tag.text.strip():
+                authors.add(name_tag.text.strip())
     authors = clean_authors(authors)
     authors = list(authors) if authors else []
 
+
+
     publish_date = ""
 
-    date_meta = (
-        soup.find("meta", property="article:published_time") or
-        soup.find("meta", property="og:published_time") or
-        soup.find("meta", {"name": "date"}) or
-        soup.find("meta", property="datePublished")
-    )
-    if date_meta and date_meta.get("content"):
-        publish_date = date_meta["content"].strip()
-
-    if not publish_date:
-        date_tag = soup.find("p", class_="text-medium")
-        if date_tag and date_tag.text.strip():
-            publish_date = date_tag.text.strip()
+    date_tag = soup.find("p", class_="text-medium")
+    if date_tag and date_tag.text.strip():
+        publish_date = date_tag.text.strip()
 
     if not publish_date:
         date_tag = soup.find("time")
@@ -160,11 +154,23 @@ def extract_article_info(url):
                     for item in json_data:
                         if 'datePublished' in item:
                             publish_date = item['datePublished']
+                            break
                 elif isinstance(json_data, dict):
                     if 'datePublished' in json_data:
                         publish_date = json_data['datePublished']
+                        break
             except json.JSONDecodeError:
                 continue
+
+    if not publish_date:
+        date_meta = (
+            soup.find("meta", property="article:published_time") or
+            soup.find("meta", property="og:published_time") or
+            soup.find("meta", {"name": "date"}) or
+            soup.find("meta", property="datePublished")
+        )
+        if date_meta and date_meta.get("content"):
+            publish_date = date_meta["content"].strip()
 
     if not publish_date:
         citation_date_meta = soup.find("meta", {"name": "citation_publication_date"})
@@ -172,6 +178,7 @@ def extract_article_info(url):
             publish_date = citation_date_meta["content"].strip()
 
     publish_date = format_publish_date(publish_date) if publish_date else ""
+
 
     favicon = ""
     favicon_link = soup.find("link", rel=lambda rel: rel and 'icon' in rel.lower())
