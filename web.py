@@ -57,7 +57,8 @@ def clean_authors(author_list):
     cleaned_authors = []
 
     for author in author_list:
-        split_authors = [name.strip() for name in author.replace('&', ',').replace('and', ',').split(',')]
+        # Use regex to replace only "&" and "and" when they are used as connectors
+        split_authors = [name.strip() for name in author.replace(' and ', ',').replace(' & ', ',').split(',')]
         
         for name in split_authors:
             words = [word.strip() for word in name.split() if word.strip().lower() not in ignore_words]
@@ -116,6 +117,14 @@ def extract_article_info(url):
         except json.JSONDecodeError:
             continue
 
+    if not authors:
+        citation_authors = soup.find_all("meta", {"name": "citation_author"})
+        for meta in citation_authors:
+            if meta.get('content'):
+                # Remove comma from author names
+                author_name = meta['content'].strip().replace(',', '')
+                authors.add(author_name)
+
     authors = clean_authors(authors)
     authors = list(authors) if authors else []
 
@@ -156,6 +165,11 @@ def extract_article_info(url):
                         publish_date = json_data['datePublished']
             except json.JSONDecodeError:
                 continue
+
+    if not publish_date:
+        citation_date_meta = soup.find("meta", {"name": "citation_publication_date"})
+        if citation_date_meta and citation_date_meta.get("content"):
+            publish_date = citation_date_meta["content"].strip()
 
     publish_date = format_publish_date(publish_date) if publish_date else ""
 
