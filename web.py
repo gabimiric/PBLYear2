@@ -171,11 +171,14 @@ def extract_article_info(url):
             soup.find("meta", property="og:published_time") or
             soup.find("meta", {"name": "date"}) or
             soup.find("meta", property="datePublished") or 
-            soup.find("meta", {"name": "citation_date"})
+            soup.find("meta", {"name": "citation_date"}) 
         )
         if date_meta and date_meta.get("content"):
             publish_date = date_meta["content"].strip()
-
+    if not publish_date:
+        span_date = soup.find("span", itemprop="datePublished")
+        if span_date and span_date.text.strip():
+            publish_date = span_date.text.strip()
     if not publish_date:
         citation_date_meta = soup.find("meta", {"name": "citation_publication_date"})
         if citation_date_meta and citation_date_meta.get("content"):
