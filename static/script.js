@@ -835,23 +835,37 @@ function formatArticleAuthorName(name, referenceFormat) {
   const nameParts = name.trim().split(' ');
 
   if (nameParts.length === 0) {
-    return '';
+      return '';
   }
 
+  const isFullName = (part) => /^[A-Za-z]+$/.test(part);
+  const fullNames = nameParts.filter(isFullName);
+
   if (referenceFormat === 'apa') {
-    const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
-    const lastName = nameParts[nameParts.length - 1];
-    return `${lastName}, ${initials}`;
+      if (fullNames.length === 1) {
+          const lastName = fullNames[0];
+          const initials = nameParts.filter(part => part.length === 2).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
+          return `${lastName}, ${initials}`;
+      } else {
+          const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
+          const lastName = fullNames[fullNames.length - 1];
+          return `${lastName}, ${initials}`;
+      }
   } else if (referenceFormat === 'mla') {
-    return nameParts.reverse().join(', ');
+      return fullNames.reverse().join(', ');
   } else if (referenceFormat === 'ieee') {
-    const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
-    const lastName = nameParts[nameParts.length - 1];
-    return `${initials} ${lastName}`;
+      if (fullNames.length === 1) {
+          return name;
+      } else {
+          const initials = nameParts.slice(0, -1).map(n => n.charAt(0).toUpperCase() + '.').join(' ');
+          const lastName = fullNames[fullNames.length - 1];
+          return `${initials} ${lastName}`;
+      }
   }
-  
-  return name; 
+
+  return name;
 }
+
 
 function formatArticleAuthors(authors, referenceFormat) {
   const authorList = authors.split(',').map(author => author.trim());
