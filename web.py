@@ -57,7 +57,6 @@ def clean_authors(author_list):
     cleaned_authors = []
 
     for author in author_list:
-        # Use regex to replace only "&" and "and" when they are used as connectors
         split_authors = [name.strip() for name in author.replace(' and ', ',').replace(' & ', ',').split(',')]
         
         for name in split_authors:
@@ -79,7 +78,11 @@ def extract_article_info(url):
     soup = BeautifulSoup(response.text, 'html.parser')
 
     title = ""
-    title_meta = soup.find("meta", property="og:title") or soup.find("meta", property="twitter:title")
+    title_meta = (
+        soup.find("meta", {"name": "citation_title"}) or
+        soup.find("meta", property="og:title") or 
+        soup.find("meta", property="twitter:title") 
+                  )
     if title_meta and title_meta.get("content"):
         title = title_meta["content"].strip()
 
@@ -167,7 +170,8 @@ def extract_article_info(url):
             soup.find("meta", property="article:published_time") or
             soup.find("meta", property="og:published_time") or
             soup.find("meta", {"name": "date"}) or
-            soup.find("meta", property="datePublished")
+            soup.find("meta", property="datePublished") or 
+            soup.find("meta", {"name": "citation_date"})
         )
         if date_meta and date_meta.get("content"):
             publish_date = date_meta["content"].strip()
