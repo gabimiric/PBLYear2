@@ -1,3 +1,4 @@
+so basically i need some help im kinda lost here because i need to use auth2.0  ( to make the user to have the abbility  to use his google account for more security )
 so basically the docker thing it works its running well evrything going as planed but i need to import redis ,json,pymango to use it and to store the data json there 
 ++++
 and i think i will add the authentication for the account ( github, google )
