@@ -32,13 +32,21 @@ def find_authors_in_json(data, keys):
             if key in data:
                 if isinstance(data[key], list):
                     for item in data[key]:
-                        if isinstance(item, dict) and "name" in item:
-                            authors.add(item["name"].strip())
+                        if isinstance(item, dict):
+                            if "name" in item:
+                                authors.add(item["name"].strip())
+                            elif "author" in item and isinstance(item["author"], str):
+                                authors.add(item["author"].strip())
                         elif isinstance(item, str):
                             authors.add(item.strip())
-                elif isinstance(data[key], dict) and "name" in data[key]:
-                    authors.add(data[key]["name"].strip())
-        
+                elif isinstance(data[key], dict):
+                    if "name" in data[key]:
+                        authors.add(data[key]["name"].strip())
+                    elif "author" in data[key] and isinstance(data[key]["author"], str):
+                        authors.add(data[key]["author"].strip())
+                elif isinstance(data[key], str):
+                    authors.add(data[key].strip())
+
         for value in data.values():
             authors.update(find_authors_in_json(value, keys))
     
@@ -47,6 +55,7 @@ def find_authors_in_json(data, keys):
             authors.update(find_authors_in_json(item, keys))
 
     return authors
+
 
 def extract_authors_from_json(json_data):
     keys_to_search = ["author", "creator", "writer", "contributor"]
@@ -137,9 +146,26 @@ def extract_article_info(url):
 
     publish_date = ""
 
-    date_tag = soup.find("p", class_="text-medium")
-    if date_tag and date_tag.text.strip():
-        publish_date = date_tag.text.strip()
+    json_ld_scripts = soup.find_all("script", type="application/ld+json")
+    for script in json_ld_scripts:
+        try:
+            json_data = json.loads(script.string)
+            if isinstance(json_data, list):
+                for item in json_data:
+                    if 'datePublished' in item:
+                        publish_date = item['datePublished']
+                        break
+            elif isinstance(json_data, dict):
+                if 'datePublished' in json_data:
+                    publish_date = json_data['datePublished']
+                    break
+        except json.JSONDecodeError:
+            continue
+
+    if not publish_date:
+        date_tag = soup.find("p", class_="text-medium")
+        if date_tag and date_tag.text.strip():
+            publish_date = date_tag.text.strip()
 
     if not publish_date:
         date_tag = soup.find("time")
@@ -148,22 +174,7 @@ def extract_article_info(url):
         elif date_tag and date_tag.text.strip():
             publish_date = date_tag.text.strip()
 
-    if not publish_date:
-        json_ld_scripts = soup.find_all("script", type="application/ld+json")
-        for script in json_ld_scripts:
-            try:
-                json_data = json.loads(script.string)
-                if isinstance(json_data, list):
-                    for item in json_data:
-                        if 'datePublished' in item:
-                            publish_date = item['datePublished']
-                            break
-                elif isinstance(json_data, dict):
-                    if 'datePublished' in json_data:
-                        publish_date = json_data['datePublished']
-                        break
-            except json.JSONDecodeError:
-                continue
+        
 
     if not publish_date:
         date_meta = (
