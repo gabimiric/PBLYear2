@@ -1,0 +1,6 @@
+url = input("Enter the article URL: ")
+title, authors, publish_date, favicon = extract_article_info(url)
+print("Title:", title)
+print("Authors:", authors)
+print("Publish Date:", publish_date)
+print("Favicon URL:", favicon)
