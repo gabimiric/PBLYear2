@@ -5,21 +5,22 @@ from groq import Groq
 import webbrowser
 import os
 from web import extract_article_info
+# import psycopg2 
 
 app = Flask(__name__, template_folder='.')
 
 CORS(app)
 @app.route('/')
 def home():
-  return render_template('home.html')
+  return render_template('templates/home.html')
 
 @app.route('/book-reference')
 def book():
-    return render_template('book-reference.html')
+    return render_template('templates/book-reference.html')
 
 @app.route('/email-assist')
 def email():
-    return render_template('email-assist.html')
+    return render_template('templates/email-assist.html')
 
     
 client = Groq(api_key="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")
