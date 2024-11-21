@@ -9,11 +9,59 @@ from web import extract_article_info
 
 app = Flask(__name__, template_folder='.')
 
+
+
+
 CORS(app)
 @app.route('/')
 def home():
   return render_template('templates/home.html')
 
+#this is for the account shit 
+@app.route('/account')
+def account():
+    return render_template('templates/account.html')
+
+
+
+@app.route('/register', methods=['POST'])
+def register_user():
+    from flask import request, jsonify
+
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Hash the password
+    hashed_password = hash_password(password)
+
+    # Save the user to the database
+    new_user = User(username=username, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'message': 'User registered successfully!'}), 201
+
+
+@app.route('/login', methods=['POST'])
+def login_user():
+    from flask import request, jsonify
+
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Find the user in the database
+    user = User.query.filter_by(username=username).first()
+    if user and verify_password(password, user.password):
+        return jsonify({'message': 'Login successful!'}), 200
+
+    return jsonify({'message': 'Invalid username or password.'}), 401
+
+
+
+
+    
 @app.route('/book-reference')
 def book():
     return render_template('templates/book-reference.html')
@@ -98,6 +146,10 @@ def extract_web_info():
         'publish_date': publish_date,
         'favicon': favicon
     })
+
+
+
+
 
 
 
