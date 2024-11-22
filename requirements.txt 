@@ -1,0 +1,7 @@
+$python -c 'import secrets; print(secrets.token_hex())' #create a secret key
+
+Flask==2.3.3               # For creating the web application
+flask-cors==3.0.10         # For enabling Cross-Origin Resource Sharing (CORS)
+requests==2.31.0           # For making HTTP requests
+argon2-cffi==21.3.0        # For secure password hashing with Argon2
+sqlite3                    # For interacting with SQLite databases (built-in with Python, no pip needed)

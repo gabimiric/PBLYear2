@@ -1,19 +1,32 @@
-from flask import Flask, request, jsonify, render_template
+import re
+import sqlite3
+import contextlib
+from flask import Flask, request, jsonify, render_template, session, redirect
 from flask_cors import CORS
 import requests
 from groq import Groq
 import webbrowser
 import os
 from web import extract_article_info
-# import psycopg2 
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+from datetime import timedelta
+from database import setup_database
+from utils import login_required, set_session
 
 app = Flask(__name__, template_folder='.')
 
+app.config['SECRET_KEY'] = 'EXAMPLE_xpSm7p5bgJY8rNoBjGWiz5yjxMNlW6231IBI62OkLc='
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=15)
+
+setup_database(name='users.db')
 
 
 
 CORS(app)
 @app.route('/')
+
 def home():
   return render_template('templates/home.html')
 
@@ -24,42 +37,105 @@ def account():
 
 
 
-@app.route('/register', methods=['POST'])
-def register_user():
-    from flask import request, jsonify
-
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    # Hash the password
-    hashed_password = hash_password(password)
-
-    # Save the user to the database
-    new_user = User(username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'User registered successfully!'}), 201
-
-
-@app.route('/login', methods=['POST'])
-def login_user():
-    from flask import request, jsonify
-
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    # Find the user in the database
-    user = User.query.filter_by(username=username).first()
-    if user and verify_password(password, user.password):
-        return jsonify({'message': 'Login successful!'}), 200
-
-    return jsonify({'message': 'Invalid username or password.'}), 401
 
 
 
+
+
+
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('templates/account.html')
+
+    # Set data to variables
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    # Attempt to query associated user data
+    query = 'select username, password, email from users where username = :username;'
+
+    with contextlib.closing(sqlite3.connect('users.db')) as conn:
+        with conn:
+            account = conn.execute(query, {'username': username}).fetchone()
+
+    if not account: 
+        return render_template('templates/account.html', error='Username does not exist')
+
+    # Verify password
+    try:
+        ph = PasswordHasher()
+        ph.verify(account[1], password)
+    except VerifyMismatchError:
+        return render_template('templates/account.html', error='Incorrect password')
+
+    # Check if password hash needs to be updated
+    if ph.check_needs_rehash(account[1]):
+        query = 'update set password = :password where username = :username;'
+        params = {'password': ph.hash(password), 'username': account[0]}
+
+        with contextlib.closing(sqlite3.connect('users.db')) as conn:
+            with conn:
+                conn.execute(query, params)
+
+    # Set cookie for user session
+    set_session(
+        username=account[0], 
+        remember_me='remember-me' in request.form
+    )
+    
+    return redirect('/')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('templates/register.html')
+    
+    # Store data to variables 
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm-password')
+    username = request.form.get('username')
+    email = request.form.get('email')
+
+    # Verify data
+    if len(password) < 8:
+        return render_template('templates/register.html', error='Your password must be 8 or more characters')
+    if password != confirm_password:
+        return render_template('templates/register.html', error='Passwords do not match')
+    if not re.match(r'^[a-zA-Z0-9]+$', username):
+        return render_template('templates/register.html', error='Username must only be letters and numbers')
+    if not 3 < len(username) < 26:
+        return render_template('templates/register.html', error='Username must be between 4 and 25 characters')
+
+    query = 'select username from users where username = :username;'
+    with contextlib.closing(sqlite3.connect('users.db')) as conn:
+        with conn:
+            result = conn.execute(query, {'username': username}).fetchone()
+    if result:
+        return render_template('templates/register.html', error='Username already exists')
+
+    # Create password hash
+    pw = PasswordHasher()
+    hashed_password = pw.hash(password)
+
+    query = 'insert into users(username, password, email) values (:username, :password, :email);'
+    params = {
+        'username': username,
+        'password': hashed_password,
+        'email': email
+    }
+
+    with contextlib.closing(sqlite3.connect('users.db')) as conn:
+        with conn:
+            result = conn.execute(query, params)
+
+    # We can log the user in right away since no email verification
+    set_session(username=username)
+    return redirect('/')
 
     
 @app.route('/book-reference')
