@@ -1,5 +1,9 @@
 # LazyQuill Changelog
 
+
+## 22/11/2024 - 22/11/2024 - Web-Scraper Improvement
+Improved program structure and optimized the web-scraper for better performance and accuracy.
+
 ## 8/11/2024 - 22/11/2024 - Database Optimization
 Optimized the database by creating different tables in order to make it more effcient when searching queries:
 - Editions - contains book_key, book_title, author(key), publisher, publish_date, works_key

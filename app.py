@@ -6,7 +6,7 @@ import webbrowser
 import os
 from web import extract_article_info
 
-app = Flask(__name__, template_folder='.')
+app = Flask(__name__, template_folder='templates')
 
 CORS(app)
 @app.route('/')
