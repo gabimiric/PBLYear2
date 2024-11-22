@@ -1,5 +1,14 @@
 # LazyQuill Changelog
 
+## 8/11/2024 - 22/11/2024 - Database Optimization
+Optimized the database by creating different tables in order to make it more effcient when searching queries:
+- Editions - contains book_key, book_title, author(key), publisher, publish_date, works_key
+- Authors - contains author key and author name
+- books_sorted, contains book_key, works_key, title (ordered by title to use for optimization later)
+- Works - work_id, author_id, cover
+(book_key is practically each edition of a book of works_key)
+These tables will make searching through the data much easier as it will avoid redudancy. We will look into ways to further improve query efficiency.
+
 ## 26/10/2024-8/11/2024 - New Feature Implementation and Book Database
 We created the database which stores the book information in a table inside a database. The web-scraping part and email generator were added, although just their rough functionalities.
 
