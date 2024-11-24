@@ -87,7 +87,15 @@
                 <div class="text menu-button-text">Email Assist</div>
             </a>
 
-            <div class="menu-button" onclick="open_settings()" id="settings-button">
+            <div class="menu-button pop-button" onclick="open_pop('login-frame')" id="account-button">
+                <svg class="menu-button-logo svg-style" viewBox="204.8 204.8 614.4 614.4">
+                    <path d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z"/>
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z"/></svg>
+                <div class="text menu-button-text">Account</div>
+            </div>
+
+            <div class="menu-button pop-button" onclick="open_pop('settings-frame')" id="settings-button">
                 <svg class="menu-button-logo svg-style" xmlns="http://www.w3.org/2000/svg" viewBox="2.21 2 19.59 20">
                     <path fill-rule="evenodd"
                         d="M9.024 2.783A1 1 0 0 1 10 2h4a1 1 0 0 1 .976.783l.44 1.981c.4.19.781.41 1.14.66l1.938-.61a1 1 0 0 1 1.166.454l2 3.464a1 1 0 0 1-.19 1.237l-1.497 1.373a8.1 8.1 0 0 1 0 1.316l1.497 1.373a1 1 0 0 1 .19 1.237l-2 3.464a1 1 0 0 1-1.166.454l-1.937-.61c-.36.25-.741.47-1.14.66l-.44 1.98A1 1 0 0 1 14 22h-4a1 1 0 0 1-.976-.783l-.44-1.981c-.4-.19-.781-.41-1.14-.66l-1.938.61a1 1 0 0 1-1.166-.454l-2-3.464a1 1 0 0 1 .19-1.237l1.497-1.373a8.097 8.097 0 0 1 0-1.316L2.53 9.97a1 1 0 0 1-.19-1.237l2-3.464a1 1 0 0 1 1.166-.454l1.937.61c.36-.25.741-.47 1.14-.66l.44-1.98zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
@@ -166,8 +174,8 @@
         </div>
     </div>
 
-    <div id="settings-frame">
-        <div id="settings-menu-frame">
+    <div id="settings-frame" class="pop-window">
+        <div class="pop__menu-frame">
             <div id="settings-menu">
                 <div class="settings-menu-button" onclick="theme_dark()">
 
@@ -185,7 +193,7 @@
                 </div>
             </div>
 
-            <div id="theme-settings-frame">
+            <div class="pop__options-frame">
                 <div id="theme-radio-container" >
                     <label class="check-box">
                         <input class="theme-radio" type="radio" id="default-theme-check" name="theme" value="default" onclick="apply_theme(this.value)" >
@@ -210,8 +218,8 @@
                 </div>
             </div>
 
-            <div id="close-settings-box">
-                <svg id="close-settings-button" class="hover-button svg-style" onclick="close_settings()"
+            <div class="close-pop-box">
+                <svg class="hover-button svg-style close-pop-button" onclick="close_pop()"
                     xmlns="http://www.w3.org/2000/svg" viewBox="176.46 176.46 670.3 670.3">
                     <path
                         d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z" />
@@ -220,7 +228,61 @@
 
         </div>
     </div>
+    
+    <div id="login-frame" class="pop-window">
+        <div class="pop__menu-frame">
+            <div id="login-panel">   
+                
+                <svg id="login-panel__logo" class="svg-style" viewBox="204.8 204.8 614.4 614.4">
+                    <path d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z"/>
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z"/></svg>
+            </div>
 
+            <div class="pop__options-frame" id="login-frame__options">
+                <div id="login-frame__inputs">
+                    <div class="form-input-box">
+                        <div class="form-text text">Email</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="form-input-box">
+                        <div class="form-text text">Password</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="author-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('author-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="close-pop-box">
+                <svg class="hover-button svg-style close-pop-button" onclick="close_pop()"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="176.46 176.46 670.3 670.3">
+                    <path
+                        d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z" />
+                </svg>
+            </div>
+
+        </div>
+    </div>
 </body>
 
 </html>

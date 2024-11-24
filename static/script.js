@@ -10,22 +10,34 @@ function close_menu() {
   document.getElementById("homepage-content-frame").style.marginLeft = "0px";
 }
 
-function open_settings() {
-  document.getElementById("settings-frame").style.display = "flex";
-  document.addEventListener('click', function close(e) {
-    const settingsMenu = document.getElementById("settings-menu-frame");
-    const button = document.getElementById("settings-button");
+function open_pop(pop) {
+  const popElement = document.getElementById(pop);
+  popElement.style.display = "flex";
 
-    if (!settingsMenu.contains(e.target) && !button.contains(e.target)) {
-      close_settings();
+  function close(e) {
+    const menus = document.querySelectorAll(".pop__menu-frame");
+    const buttons = document.querySelectorAll(".pop-button");
+
+    const isClickOutsideButton = !Array.from(buttons).some(button => button.contains(e.target));
+    const isClickOutsideMenu = !Array.from(menus).some(menu => menu.contains(e.target));
+
+    if (isClickOutsideButton && isClickOutsideMenu) {
+      close_pop(pop);
+      document.removeEventListener('click', close);
     }
-  });
+  }
 
+  document.addEventListener('click', close);
 }
-function close_settings() {
-  document.getElementById("settings-frame").style.removeProperty("display");
+
+function close_pop() {
+  const settingsFrames = document.querySelectorAll(".pop-window");
+  settingsFrames.forEach(frame => {
+    frame.style.removeProperty("display");
+  });
   document.removeEventListener('click', close);
 }
+
 
 function clear_input(input_name) {
   document.getElementById(input_name).value = "";
