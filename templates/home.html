@@ -89,9 +89,11 @@
 
             <div class="menu-button pop-button" onclick="open_pop('login-frame')" id="account-button">
                 <svg class="menu-button-logo svg-style" viewBox="204.8 204.8 614.4 614.4">
-                    <path d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
-                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z"/>
-                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z"/></svg>
+                    <path
+                        d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                </svg>
                 <div class="text menu-button-text">Account</div>
             </div>
 
@@ -194,25 +196,30 @@
             </div>
 
             <div class="pop__options-frame">
-                <div id="theme-radio-container" >
+                <div id="theme-radio-container">
                     <label class="check-box">
-                        <input class="theme-radio" type="radio" id="default-theme-check" name="theme" value="default" onclick="apply_theme(this.value)" >
+                        <input class="theme-radio" type="radio" id="default-theme-check" name="theme" value="default"
+                            onclick="apply_theme(this.value)">
                         <div class="text theme-check-text">Default</div>
                     </label>
                     <label class="check-box">
-                        <input class="theme-radio" type="radio" id="midnight-theme-check" name="theme" value="midnight" onclick="apply_theme(this.value)">
+                        <input class="theme-radio" type="radio" id="midnight-theme-check" name="theme" value="midnight"
+                            onclick="apply_theme(this.value)">
                         <div class="text theme-check-text">Midnight</div>
                     </label>
                     <label class="check-box">
-                        <input class="theme-radio" type="radio" id="blossom-theme-check" name="theme" value="blossom" onclick="apply_theme(this.value)">
+                        <input class="theme-radio" type="radio" id="blossom-theme-check" name="theme" value="blossom"
+                            onclick="apply_theme(this.value)">
                         <div class="text theme-check-text">Blossom</div>
                     </label>
                     <label class="check-box">
-                        <input class="theme-radio" type="radio" id="forest-theme-check" name="theme" value="forest" onclick="apply_theme(this.value)">
+                        <input class="theme-radio" type="radio" id="forest-theme-check" name="theme" value="forest"
+                            onclick="apply_theme(this.value)">
                         <div class="text theme-check-text">Forest</div>
                     </label>
                     <label class="check-box">
-                        <input class="theme-radio" type="radio" id="retro-pop-theme-check" name="theme" value="retro-pop" onclick="apply_theme(this.value)">
+                        <input class="theme-radio" type="radio" id="retro-pop-theme-check" name="theme"
+                            value="retro-pop" onclick="apply_theme(this.value)">
                         <div class="text theme-check-text">Retro Pop</div>
                     </label>
                 </div>
@@ -228,19 +235,21 @@
 
         </div>
     </div>
-    
+
     <div id="login-frame" class="pop-window">
         <div class="pop__menu-frame">
-            <div id="login-panel">   
-                
-                <svg id="login-panel__logo" class="svg-style" viewBox="204.8 204.8 614.4 614.4">
-                    <path d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
-                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z"/>
-                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z"/></svg>
+            <div class="pop-panel">
+
+                <svg class="svg-style account-panel__logo" viewBox="204.8 204.8 614.4 614.4">
+                    <path
+                        d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                </svg>
             </div>
 
-            <div class="pop__options-frame" id="login-frame__options">
-                <div id="login-frame__inputs">
+            <div class="pop__options-frame pop-frame__options">
+                <div class="pop-frame__inputs">
                     <div class="form-input-box">
                         <div class="form-text text">Email</div>
                         <div class="book-input-frame">
@@ -271,6 +280,24 @@
                     </div>
                 </div>
 
+                <div class="pop__complete-form__frame">
+
+                    <svg class="svg-style pop__complete-form__icon" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 299.28 512">
+                        <g xmlns="http://www.w3.org/2000/svg" transform="matrix(0 1 -1 0 299.28 -0)">
+                            <path d="M75.334 286.691c-64.764 36.929-96.186-15.595-60.203-51.975L215.997 25.104c33.472-33.472 46.534-33.472 80.006 
+                            0l200.866 209.612c35.983 36.38 4.561 88.904-60.203 51.975L256 189.339 75.334 286.691z" />
+                        </g>
+                    </svg>
+
+                    <div class="pop__complete-form__text text">Sign in</div>
+
+                </div>
+                <div class="pop__change-page__option-frame">
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('register-frame')">Sign up</div>
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('reset-frame')">Reset Password</div>
+
+                </div>
             </div>
 
             <div class="close-pop-box">
@@ -283,6 +310,187 @@
 
         </div>
     </div>
+
+    <div id="register-frame" class="pop-window">
+        <div class="pop__menu-frame">
+            <div class="pop-panel">
+
+                <svg class="svg-style account-panel__logo" viewBox="204.8 204.8 614.4 614.4">
+                    <path
+                        d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                </svg>
+            </div>
+
+            <div class="pop__options-frame pop-frame__options">
+                <div class="pop-frame__inputs">
+                    <div class="form-input-box">
+                        <div class="form-text text">Email</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="form-input-box">
+                        <div class="form-text text">Password</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="form-input-box">
+                        <div class="form-text text">Confirm</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="pop__complete-form__frame">
+
+                    <svg class="svg-style pop__complete-form__icon" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 299.28 512">
+                        <g xmlns="http://www.w3.org/2000/svg" transform="matrix(0 1 -1 0 299.28 -0)">
+                            <path d="M75.334 286.691c-64.764 36.929-96.186-15.595-60.203-51.975L215.997 25.104c33.472-33.472 46.534-33.472 80.006 
+                            0l200.866 209.612c35.983 36.38 4.561 88.904-60.203 51.975L256 189.339 75.334 286.691z" />
+                        </g>
+                    </svg>
+
+                    <div class="pop__complete-form__text text">Sign up</div>
+
+                </div>
+                <div class="pop__change-page__option-frame">
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('login-frame')">Sign in</div>
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('reset-frame')">Reset Password</div>
+
+                </div>
+            </div>
+
+            <div class="close-pop-box">
+                <svg class="hover-button svg-style close-pop-button" onclick="close_pop()"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="176.46 176.46 670.3 670.3">
+                    <path
+                        d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z" />
+                </svg>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="reset-frame" class="pop-window">
+        <div class="pop__menu-frame">
+            <div class="pop-panel">
+
+                <svg class="svg-style account-panel__logo" viewBox="204.8 204.8 614.4 614.4">
+                    <path
+                        d="M819.2 729.088V757.76c0 33.792-27.648 61.44-61.44 61.44H266.24c-33.792 0-61.44-27.648-61.44-61.44v-28.672c0-74.752 87.04-119.808 168.96-155.648 3.072-1.024 5.12-2.048 8.192-4.096 6.144-3.072 13.312-3.072 19.456 1.024C434.176
+                     591.872 472.064 604.16 512 604.16c39.936 0 77.824-12.288 110.592-32.768 6.144-4.096 13.312-4.096 19.456-1.024 3.072 1.024 5.12 2.048 8.192 4.096 81.92 34.816 168.96 79.872 168.96 154.624z" />
+                    <path d="M359.424 373.76a168.96 152.576 90 1 0 305.152 0 168.96 152.576 90 1 0-305.152 0Z" />
+                </svg>
+            </div>
+
+            <div class="pop__options-frame pop-frame__options">
+                <div class="pop-frame__inputs">
+                    <div class="form-input-box">
+                        <div class="form-text text">Email</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="form-input-box">
+                        <div class="form-text text">New Password</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    <div class="form-input-box">
+                        <div class="form-text text">Confirm</div>
+                        <div class="book-input-frame">
+                            <input type="text" class="input-email" id="title-input" maxlength="100"
+                                oninput="manualSearch()">
+
+                            <svg class="input-clear svg-style" onclick="clear_input('title-input'), manualSearch()"
+                                viewBox="176.46 176.46 670.3 670.3" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="m195.2 195.2a64 64 0 0 1 90.496 0l226.3 226.3 226.3-226.3a64 64 0 0 1 90.496 90.496l-226.3 226.3 226.3 226.3a64 64 0 0 1-90.496 90.496l-226.3-226.3-226.3 226.3a64 64 0 0 1-90.496-90.496l226.3-226.3-226.3-226.3a64 64 0 0 1 0-90.496z" />
+                            </svg>
+
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="pop__complete-form__frame">
+
+                    <svg class="svg-style pop__complete-form__icon" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 299.28 512">
+                        <g xmlns="http://www.w3.org/2000/svg" transform="matrix(0 1 -1 0 299.28 -0)">
+                            <path d="M75.334 286.691c-64.764 36.929-96.186-15.595-60.203-51.975L215.997 25.104c33.472-33.472 46.534-33.472 80.006 
+                            0l200.866 209.612c35.983 36.38 4.561 88.904-60.203 51.975L256 189.339 75.334 286.691z" />
+                        </g>
+                    </svg>
+
+                    <div class="pop__complete-form__text text">Reset Password</div>
+
+                </div>
+                <div class="pop__change-page__option-frame">
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('login-frame')">Sign in</div>
+                    <div class="pop__change-page text" onclick="close_pop(), open_pop('register-frame')">Sign up</div>
+
+                </div>
+            </div>
+
+            <div class="close-pop-box">
+                <svg class="hover-button svg-style close-pop-button" onclick="close_pop()"
+                    xmlns="http://www.w3.org/2000/svg" viewBox="176.46 176.46 670.3 670.3">
+                    <path
+                        d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z" />
+                </svg>
+            </div>
+
+        </div>
+    </div>
+
 </body>
 
 </html>
