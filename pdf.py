@@ -1,7 +1,9 @@
 import PyPDF2
+import json
+from groq import Groq
 
-# Open the PDF file
-with open("ProjectPBL/cv.pdf", "rb") as file:
+# Open the PDF file and extract text
+with open("cv.pdf", "rb") as file:
     reader = PyPDF2.PdfReader(file)
     text = ""
     for page in reader.pages:
@@ -10,11 +12,12 @@ with open("ProjectPBL/cv.pdf", "rb") as file:
 
 print(text,'\n')
 
-from groq import Groq
-
+# Initialize Groq client
 client = Groq(
     api_key="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"
 )
+
+# Create a JSON response from the extracted text
 completion = client.chat.completions.create(
     model="llama3-8b-8192",
     messages=[
@@ -24,7 +27,7 @@ completion = client.chat.completions.create(
         },
         {
             "role": "user",
-            "content": "Write a simple resume json for a job position as a front-end developer from the give pdf text:\n"+text+"\nUse the following exact field names:\n\"name\"\n\"contactInfo\" (phone, email, address)\n\"summary\"\n\"skills\"\n\"certifications\""
+            "content": "Write a simple resume json for a job position as a front-end developer from the given PDF text:\n" + text + "\nUse the following exact field names:\n\"name\"\n\"contactInfo\" (phone, email, address)\n\"summary\"\n\"skills\"\n\"certifications\""
         }
     ],
     temperature=1,
@@ -35,4 +38,12 @@ completion = client.chat.completions.create(
     stop=None,
 )
 
-print(completion.choices[0].message)
+# Extract the content from the completion response
+resume_json = completion.choices[0].message.content
+
+# Save to a file in the same directory with UTF-8 encoding
+output_file = "resume.json"
+with open(output_file, "w", encoding="utf-8") as json_file:
+    json_file.write(resume_json)
+
+print(f"Resume JSON saved to {output_file}")
